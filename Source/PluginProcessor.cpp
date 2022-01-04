@@ -202,12 +202,12 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
 
     auto chainSettings = getChainSettings(apvts);
 
-    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), chainSettings.peakFreq, chainSettings.peakQuality, juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibels));
+    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), chainSettings.peakFreq, chainSettings.peakQuality, juce::Decibels::decibelsToGain(slapLevel  *-1));
 
     leftChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
     rightChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
 
- 
+    //juce::dsp::AudioBlock<float> block(buffer);
 
     auto leftBlock = block.getSingleChannelBlock(0);
     auto rightBlock = block.getSingleChannelBlock(1);
@@ -217,6 +217,18 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
 
     leftChain.process(leftContext);
     rightChain.process(rightContext);
+
+    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    {
+        auto* channelData = buffer.getWritePointer(channel);
+
+        // ..do something to the data...
+        for (int sample = 0; sample < buffer.getNumSamples(); sample++)
+        {
+            channelData[sample] = buffer.getSample(channel, sample) / rawVolume;
+
+        }
+    }
 }
 
 //==============================================================================
@@ -267,7 +279,7 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts)
 juce::AudioProcessorValueTreeState::ParameterLayout SlapsAudioProcessor::createParameterLayout()
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
-
+    
     //creating our Parameters, aka the things that change
     layout.add(std::make_unique<juce::AudioParameterFloat>("LowCut Freq", "LowCut Freq",
         juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.25f), 20.f));
