@@ -94,13 +94,25 @@ void SlapsAudioProcessor::changeProgramName (int index, const juce::String& newN
 void SlapsAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     juce::dsp::ProcessSpec spec;
+
     spec.maximumBlockSize = samplesPerBlock;
+
     spec.numChannels = getTotalNumOutputChannels();
+
     spec.sampleRate = sampleRate;
 
     //prep compressor
     compressor.prepare(spec);
 
+    leftChain.prepare(spec);
+    rightChain.prepare(spec);
+
+    auto chainSettings = getChainSettings(apvts);
+
+    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate, chainSettings.peakFreq, chainSettings.peakQuality, juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibels));
+
+    leftChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
+    rightChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
 
 
 
@@ -188,7 +200,23 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
 
     compressor.process(context);
 
+    auto chainSettings = getChainSettings(apvts);
 
+    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), chainSettings.peakFreq, chainSettings.peakQuality, juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibels));
+
+    leftChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
+    rightChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
+
+ 
+
+    auto leftBlock = block.getSingleChannelBlock(0);
+    auto rightBlock = block.getSingleChannelBlock(1);
+
+    juce::dsp::ProcessContextReplacing<float> leftContext(leftBlock);
+    juce::dsp::ProcessContextReplacing<float> rightContext(rightBlock);
+
+    leftChain.process(leftContext);
+    rightChain.process(rightContext);
 }
 
 //==============================================================================
@@ -211,6 +239,8 @@ void SlapsAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
     // as intermediaries to make it easy to save and load complex data.
 }
 
+
+
 void SlapsAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
@@ -218,6 +248,58 @@ void SlapsAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 
 }
 
+ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts)
+{
+    ChainSettings settings;
+
+    settings.lowCutFreq = apvts.getRawParameterValue("LowCut Freq")->load();
+    settings.highCutFreq = apvts.getRawParameterValue("HighCut Freq")->load();
+    settings.peakFreq = apvts.getRawParameterValue("Peak Freq")->load();
+    settings.peakGainInDecibels = apvts.getRawParameterValue("Peak Gain")->load();
+    settings.peakQuality = apvts.getRawParameterValue("Peak Quality")->load();
+    settings.lowCutSlope = apvts.getRawParameterValue("LowCut Slope")->load();
+    settings.highCutSlope = apvts.getRawParameterValue("HighCut Slope")->load();
+
+
+    return settings;
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout SlapsAudioProcessor::createParameterLayout()
+{
+    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+
+    //creating our Parameters, aka the things that change
+    layout.add(std::make_unique<juce::AudioParameterFloat>("LowCut Freq", "LowCut Freq",
+        juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.25f), 20.f));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>("HighCut Freq", "HighCut Freq",
+        juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.25f), 20000.f));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>("Peak Freq", "Peak Freq",
+        juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.25f), 750.f));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>("Peak Gain", "Peak Gain",
+        juce::NormalisableRange<float>(-24.f, 24.f, 0.5f, 1.f), 0.0f));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>("Peak Quality", "Peak Quality",
+        juce::NormalisableRange<float>(0.1f, 10.f, 0.05f, 1.f), 1.f));
+
+    //Do some math for the next two parameters, (get 12, 24, 36, 48
+    juce::StringArray stringArray;
+    for (int i = 0; i < 4; ++i)
+    {
+        juce::String str;
+        str << (12 + i * 12);
+        str << " db/Oct";
+        stringArray.add(str);
+    }
+
+    //and those two params...
+    layout.add(std::make_unique<juce::AudioParameterChoice>("LowCut Slope", "LowCut Slope", stringArray, 0));
+    layout.add(std::make_unique<juce::AudioParameterChoice>("HighCut Slope", "HighCut Slope", stringArray, 0));
+
+    return layout;
+}
 
 
 //==============================================================================
