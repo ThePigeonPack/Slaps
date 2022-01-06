@@ -64,10 +64,9 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     double rawVolume;
-    float slapLevel;
+    float slapLevel = 0;
 
-    static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
-    juce::AudioProcessorValueTreeState apvts{ *this, nullptr, "Parameters", createParameterLayout() };
+    
 
 private:
 
