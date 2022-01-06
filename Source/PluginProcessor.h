@@ -76,14 +76,16 @@ private:
 
     using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
 
-    using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
+    using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, Filter, Filter, CutFilter>;
 
     MonoChain leftChain, rightChain;
 
     enum ChainPositions
     {
         LowCut,
-        Peak,
+        PeakOne,
+        PeakTwo,
+        PeakThree,
         HighCut
     };
 

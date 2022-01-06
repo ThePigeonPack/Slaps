@@ -110,12 +110,20 @@ void SlapsAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 
 
 
-    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate, 750.f, 1.0f, juce::Decibels::decibelsToGain(0));
+    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate, 250.f, 1.0f, juce::Decibels::decibelsToGain(0));
 
-    leftChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
-    rightChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
+    leftChain.get<ChainPositions::PeakOne>().coefficients = *peakCoefficients;
+    rightChain.get<ChainPositions::PeakOne>().coefficients = *peakCoefficients;
 
+    auto peakTwoCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate, 750.f, 1.0f, juce::Decibels::decibelsToGain(0));
 
+    leftChain.get<ChainPositions::PeakTwo>().coefficients = *peakTwoCoefficients;
+    rightChain.get<ChainPositions::PeakTwo>().coefficients = *peakTwoCoefficients;
+
+    auto peakThreeCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), 2000.f, 1.0f, juce::Decibels::decibelsToGain(0));
+
+    leftChain.get<ChainPositions::PeakThree>().coefficients = *peakThreeCoefficients;
+    rightChain.get<ChainPositions::PeakThree>().coefficients = *peakThreeCoefficients;
 
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
@@ -204,10 +212,20 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
 
     
 
-    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), 750.f, 1.0f, juce::Decibels::decibelsToGain(slapLevel  *-1));
+    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), 250.f, 1.0f, juce::Decibels::decibelsToGain(slapLevel));
 
-    leftChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
-    rightChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
+    leftChain.get<ChainPositions::PeakOne>().coefficients = *peakCoefficients;
+    rightChain.get<ChainPositions::PeakOne>().coefficients = *peakCoefficients;
+
+    auto peakTwoCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), 750.f, 1.0f, juce::Decibels::decibelsToGain(slapLevel * -1));
+
+    leftChain.get<ChainPositions::PeakTwo>().coefficients = *peakTwoCoefficients;
+    rightChain.get<ChainPositions::PeakTwo>().coefficients = *peakTwoCoefficients;
+
+    auto peakThreeCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), 2000.f, 1.0f, juce::Decibels::decibelsToGain(slapLevel));
+
+    leftChain.get<ChainPositions::PeakThree>().coefficients = *peakThreeCoefficients;
+    rightChain.get<ChainPositions::PeakThree>().coefficients = *peakThreeCoefficients;
 
     //juce::dsp::AudioBlock<float> block(buffer);
 
