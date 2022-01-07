@@ -32,6 +32,16 @@ SlapsAudioProcessorEditor::SlapsAudioProcessorEditor (SlapsAudioProcessor& p)
     slapKnob.setValue(0.0);
     slapKnob.addListener(this);
     addAndMakeVisible(slapKnob);
+
+    //Show our Drop Down List
+    addAndMakeVisible(instrType);
+    instrType.addItem ("None", 1);
+    instrType.addItem("Kick", 2);
+    instrType.addItem("Snare", 3);
+    instrType.addItem("Hi-Hat", 4);
+    instrType.setSelectedId(1);
+
+
 }
 
 SlapsAudioProcessorEditor::~SlapsAudioProcessorEditor()
@@ -42,7 +52,7 @@ SlapsAudioProcessorEditor::~SlapsAudioProcessorEditor()
 void SlapsAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll(juce::Colours::ghostwhite);
+    g.fillAll(juce::Colours::burlywood);
 
     //Title lol
     g.setFont(juce::Font(48.0f));
@@ -64,6 +74,10 @@ void SlapsAudioProcessorEditor::resized()
 
     //slap Knob
     slapKnob.setBounds(200, 100, 100, 100);
+
+    //Instrument Type Box
+    instrType.setBounds(50, 50, 100, 50);
+
 }
 
 void SlapsAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)

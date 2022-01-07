@@ -33,6 +33,7 @@ private:
 
     juce::Slider gainSlider;
     juce::Slider slapKnob;
+    juce::ComboBox instrType;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SlapsAudioProcessorEditor)
 };
