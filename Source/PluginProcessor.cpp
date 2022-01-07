@@ -108,7 +108,7 @@ void SlapsAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     leftChain.prepare(spec);
     rightChain.prepare(spec);
 
-
+    auto instrument = "bass";
 
     auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate, 63.f, 1.0541f, juce::Decibels::decibelsToGain(0));
 
@@ -210,12 +210,47 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
 
     compressor.process(context);
 
-    peakOneFreq = 63.f;
-    peakOneQ = 1.0541f;
-    peakTwoFreq = 433.f;
-    peakTwoQ = 0.866f;
-    peakThreeFreq = 5477.f;
-    peakThreeQ = 0.782464f;
+    auto instrument = "bass";
+
+    if (instrument == "bass")
+    {
+        peakOneFreq = 63.f;
+        peakOneQ = 1.0541f;
+        peakTwoFreq = 433.f;
+        peakTwoQ = 0.866f;
+        peakThreeFreq = 5477.f;
+        peakThreeQ = 0.782464f;
+    }
+    
+    else if (instrument == "snare")
+    {
+        peakOneFreq = 137.f;
+        peakOneQ = 0.979796f;
+        peakTwoFreq = 600.f;
+        peakTwoQ = 1.2f;
+        peakThreeFreq = 7746.f;
+        peakThreeQ = 0.704179f;
+    }
+
+    else if (instrument == "hi hat")
+    {
+        peakOneFreq = 387.f;
+        peakOneQ = 1.9365f;
+        peakTwoFreq = 200.f;
+        peakTwoQ = 0.866f;
+        peakThreeFreq = 10000.f;
+        peakThreeQ = 0.6666667f;
+    }
+
+    else if (instrument == "none")
+    {
+        peakOneFreq = 387.f;
+        peakOneQ = 1.9365f;
+        peakTwoFreq = 200.f;
+        peakTwoQ = 0.866f;
+        peakThreeFreq = 10000.f;
+        peakThreeQ = 0.6666667f;
+    }
     
 
     auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), peakOneFreq, peakOneQ, juce::Decibels::decibelsToGain(slapLevel * 0.75));
