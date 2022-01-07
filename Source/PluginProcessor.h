@@ -66,6 +66,13 @@ public:
     double rawVolume;
     float slapLevel = 0;
 
+    float peakOneFreq;
+    float peakTwoFreq;
+    float peakThreeFreq;
+    float peakOneQ;
+    float peakTwoQ;
+    float peakThreeQ;
+
     
 
 private:
