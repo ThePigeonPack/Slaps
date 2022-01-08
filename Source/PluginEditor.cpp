@@ -39,7 +39,9 @@ SlapsAudioProcessorEditor::SlapsAudioProcessorEditor (SlapsAudioProcessor& p)
     instrType.addItem("Kick", 2);
     instrType.addItem("Snare", 3);
     instrType.addItem("Hi-Hat", 4);
+    instrType.onChange = [this] { instrumentChanged(); };
     instrType.setSelectedId(1);
+
 
 
 }
@@ -91,3 +93,4 @@ void SlapsAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
         audioProcessor.slapLevel = slapKnob.getValue();
     }
 }
+

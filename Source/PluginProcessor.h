@@ -58,6 +58,7 @@ public:
 
     double rawVolume;
     float slapLevel = 0;
+    int instrument = 1;
 
     float peakOneFreq;
     float peakTwoFreq;
@@ -88,6 +89,8 @@ private:
         PeakThree,
         HighCut
     };
+
+
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SlapsAudioProcessor)

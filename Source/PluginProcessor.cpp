@@ -210,9 +210,9 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
 
     compressor.process(context);
 
-    auto instrument = "bass";
-
-    if (instrument == "bass")
+    //now we get into eq stuff
+    //setting the values for each instrument. I'm dumb, so 1 = none, 2 = kick, 3 = snare, 4 = hihat
+    if (instrument == 2)
     {
         peakOneFreq = 63.f;
         peakOneQ = 1.0541f;
@@ -222,7 +222,7 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         peakThreeQ = 0.782464f;
     }
     
-    else if (instrument == "snare")
+    else if (instrument == 3)
     {
         peakOneFreq = 137.f;
         peakOneQ = 0.979796f;
@@ -232,7 +232,7 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         peakThreeQ = 0.704179f;
     }
 
-    else if (instrument == "hi hat")
+    else if (instrument == 4)
     {
         peakOneFreq = 387.f;
         peakOneQ = 1.9365f;
@@ -242,7 +242,7 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         peakThreeQ = 0.6666667f;
     }
 
-    else if (instrument == "none")
+    else if (instrument == 1)
     {
         peakOneFreq = 387.f;
         peakOneQ = 1.9365f;
@@ -252,7 +252,7 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         peakThreeQ = 0.6666667f;
     }
     
-
+    //these three sets set each of the peak filters to do what they gotta do
     auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), peakOneFreq, peakOneQ, juce::Decibels::decibelsToGain(slapLevel * 0.75));
 
     leftChain.get<ChainPositions::PeakOne>().coefficients = *peakCoefficients;
@@ -269,7 +269,7 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     rightChain.get<ChainPositions::PeakThree>().coefficients = *peakThreeCoefficients;
 
     //juce::dsp::AudioBlock<float> block(buffer);
-
+    //and these lines basically get the eq into the signal, replacing the old version
     auto leftBlock = block.getSingleChannelBlock(0);
     auto rightBlock = block.getSingleChannelBlock(1);
 
@@ -279,6 +279,7 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     leftChain.process(leftContext);
     rightChain.process(rightContext);
 
+    //this part sets the volume back to normal from the initial gain slider, and in the future will also do the auto makeup gain from the compressor
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer(channel);
