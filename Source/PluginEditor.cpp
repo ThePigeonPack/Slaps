@@ -91,6 +91,7 @@ void SlapsAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
     if (slider == &slapKnob)
     {
         audioProcessor.slapLevel = slapKnob.getValue();
+        audioProcessor.volumeSlap = pow(10, slapKnob.getValue() / 20);
     }
 }
 

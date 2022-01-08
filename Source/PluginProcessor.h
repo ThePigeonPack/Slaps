@@ -59,6 +59,7 @@ public:
     double rawVolume;
     float slapLevel = 0;
     int instrument = 1;
+    double volumeSlap = 0;
 
     float peakOneFreq;
     float peakTwoFreq;

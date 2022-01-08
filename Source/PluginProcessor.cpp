@@ -279,6 +279,8 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     leftChain.process(leftContext);
     rightChain.process(rightContext);
 
+    auto chainVolume = rawVolume / volumeSlap;
+
     //this part sets the volume back to normal from the initial gain slider, and in the future will also do the auto makeup gain from the compressor
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
@@ -287,10 +289,11 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         // ..do something to the data...
         for (int sample = 0; sample < buffer.getNumSamples(); sample++)
         {
-            channelData[sample] = buffer.getSample(channel, sample) / rawVolume;
+            channelData[sample] = buffer.getSample(channel, sample) / chainVolume;
 
         }
     }
+
 }
 
 //==============================================================================
