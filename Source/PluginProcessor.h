@@ -56,10 +56,10 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-    double rawVolume;
+    double rawVolume = 0;
     float slapLevel = 0;
     int instrument = 1;
-    double volumeSlap = 0;
+    double volumeSlap = 1;
 
     float peakOneFreq;
     float peakTwoFreq;
