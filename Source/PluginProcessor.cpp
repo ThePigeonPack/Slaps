@@ -93,6 +93,8 @@ void SlapsAudioProcessor::changeProgramName (int index, const juce::String& newN
 //==============================================================================
 void SlapsAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+
+
     juce::dsp::ProcessSpec spec;
 
     spec.maximumBlockSize = samplesPerBlock;
@@ -124,6 +126,15 @@ void SlapsAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 
     leftChain.get<ChainPositions::PeakThree>().coefficients = *peakThreeCoefficients;
     rightChain.get<ChainPositions::PeakThree>().coefficients = *peakThreeCoefficients;
+
+    //low cut filter info
+    auto cutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(500.f, sampleRate, 2);
+
+    auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
+    *leftLowCut.get<0>().coefficients = *cutCoefficients[0];
+
+    auto& rightLowCut = rightChain.get<ChainPositions::LowCut>();
+    *rightLowCut.get<0>().coefficients = *cutCoefficients[0];
 
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
@@ -288,6 +299,15 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         leftChain.get<ChainPositions::PeakThree>().coefficients = *peakThreeCoefficients;
         rightChain.get<ChainPositions::PeakThree>().coefficients = *peakThreeCoefficients;
     }
+
+    //low cut filter info
+    auto cutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(500.f, getSampleRate(), 2);
+
+    auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
+    *leftLowCut.get<0>().coefficients = *cutCoefficients[0];
+
+    auto& rightLowCut = rightChain.get<ChainPositions::LowCut>();
+    *rightLowCut.get<0>().coefficients = *cutCoefficients[0];
 
 
     //juce::dsp::AudioBlock<float> block(buffer);

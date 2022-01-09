@@ -80,6 +80,7 @@ void SlapsAudioProcessorEditor::resized()
     //Instrument Type Box
     instrType.setBounds(50, 50, 100, 50);
 
+
 }
 
 void SlapsAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)

@@ -11,8 +11,6 @@
 #include <JuceHeader.h>
 
 
-
-
 //==============================================================================
 /**
 */
@@ -68,7 +66,7 @@ public:
     float peakTwoQ;
     float peakThreeQ;
 
-    
+ 
 
 private:
 
