@@ -37,6 +37,7 @@ private:
     juce::Slider gainSlider;
     juce::Slider slapKnob;
     juce::ComboBox instrType;
+    juce::ToggleButton pluginBypassButton;
 
     //quick function to set the instrument variable to equal the instrument combobox value
     void instrumentChanged()
@@ -51,7 +52,10 @@ private:
         }
     }
 
-
+    void bypassButtonToggleState(bool bypassValue)
+    {
+        audioProcessor.pluginBypassed = bypassValue;
+    }
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SlapsAudioProcessorEditor)
 };

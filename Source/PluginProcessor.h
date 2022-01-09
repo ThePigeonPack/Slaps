@@ -67,6 +67,8 @@ public:
     float peakThreeQ;
     float cutFreq;
 
+    bool pluginBypassed{ false };
+
  
 
 private:

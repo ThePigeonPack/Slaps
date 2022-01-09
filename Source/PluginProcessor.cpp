@@ -212,14 +212,16 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     auto context = juce::dsp::ProcessContextReplacing<float>(block);
 
     //Now compress the signal
-    compressor.setRatio(10.0);
-    compressor.setAttack(40);
-    compressor.setRelease(200);
-    compressor.setThreshold(slapLevel * -2.5);
 
-
-
-    compressor.process(context);
+    if (pluginBypassed == false)
+    {
+        compressor.setRatio(10.0);
+        compressor.setAttack(40);
+        compressor.setRelease(200);
+        compressor.setThreshold(slapLevel * -2.5);
+        compressor.process(context);
+    }
+    else {}
 
     //now we get into eq stuff
     //setting the values for each instrument. I'm dumb, so 1 = none, 2 = kick, 3 = snare, 4 = hihat
@@ -272,15 +274,18 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     {
         auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), peakOneFreq, peakOneQ, juce::Decibels::decibelsToGain(0));
 
+
         leftChain.get<ChainPositions::PeakOne>().coefficients = *peakCoefficients;
         rightChain.get<ChainPositions::PeakOne>().coefficients = *peakCoefficients;
 
         auto peakTwoCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), peakTwoFreq, peakTwoQ, juce::Decibels::decibelsToGain(0));
 
+
         leftChain.get<ChainPositions::PeakTwo>().coefficients = *peakTwoCoefficients;
         rightChain.get<ChainPositions::PeakTwo>().coefficients = *peakTwoCoefficients;
 
         auto peakThreeCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), peakThreeFreq, peakThreeQ, juce::Decibels::decibelsToGain(0));
+
 
         leftChain.get<ChainPositions::PeakThree>().coefficients = *peakThreeCoefficients;
         rightChain.get<ChainPositions::PeakThree>().coefficients = *peakThreeCoefficients;
@@ -290,22 +295,31 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         //these three sets set each of the peak filters to do what they gotta do
         auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), peakOneFreq, peakOneQ, juce::Decibels::decibelsToGain(slapLevel * 0.75));
 
+        leftChain.setBypassed <ChainPositions::PeakOne>(pluginBypassed);
+        rightChain.setBypassed <ChainPositions::PeakOne>(pluginBypassed);
         leftChain.get<ChainPositions::PeakOne>().coefficients = *peakCoefficients;
         rightChain.get<ChainPositions::PeakOne>().coefficients = *peakCoefficients;
 
         auto peakTwoCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), peakTwoFreq, peakTwoQ, juce::Decibels::decibelsToGain(slapLevel * -0.4));
 
+        leftChain.setBypassed <ChainPositions::PeakTwo>(pluginBypassed);
+        rightChain.setBypassed <ChainPositions::PeakTwo>(pluginBypassed);
         leftChain.get<ChainPositions::PeakTwo>().coefficients = *peakTwoCoefficients;
         rightChain.get<ChainPositions::PeakTwo>().coefficients = *peakTwoCoefficients;
 
         auto peakThreeCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), peakThreeFreq, peakThreeQ, juce::Decibels::decibelsToGain(slapLevel * 0.5));
 
+        leftChain.setBypassed <ChainPositions::PeakThree>(pluginBypassed);
+        rightChain.setBypassed <ChainPositions::PeakThree>(pluginBypassed);
         leftChain.get<ChainPositions::PeakThree>().coefficients = *peakThreeCoefficients;
         rightChain.get<ChainPositions::PeakThree>().coefficients = *peakThreeCoefficients;
     }
 
     //low cut filter info
     auto cutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(cutFreq, getSampleRate(), 2);
+
+    leftChain.setBypassed <ChainPositions::LowCut>(pluginBypassed);
+    rightChain.setBypassed <ChainPositions::LowCut>(pluginBypassed);
 
     auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
     *leftLowCut.get<0>().coefficients = *cutCoefficients[0];
@@ -325,8 +339,15 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     leftChain.process(leftContext);
     rightChain.process(rightContext);
     
-
-    auto chainVolume = rawVolume / volumeSlap;
+    double chainVolume;
+    if (pluginBypassed == false)
+    {
+        chainVolume = rawVolume / volumeSlap;
+    }
+    else
+    {
+        chainVolume = rawVolume;
+    }
 
     //this part sets the volume back to normal from the initial gain slider, and in the future will also do the auto makeup gain from the compressor
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
