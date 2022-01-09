@@ -65,6 +65,7 @@ public:
     float peakOneQ;
     float peakTwoQ;
     float peakThreeQ;
+    float cutFreq;
 
  
 

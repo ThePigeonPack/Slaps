@@ -128,7 +128,7 @@ void SlapsAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     rightChain.get<ChainPositions::PeakThree>().coefficients = *peakThreeCoefficients;
 
     //low cut filter info
-    auto cutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(500.f, sampleRate, 2);
+    auto cutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(20.f, sampleRate, 2);
 
     auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
     *leftLowCut.get<0>().coefficients = *cutCoefficients[0];
@@ -231,6 +231,7 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         peakTwoQ = 0.866f;
         peakThreeFreq = 5477.f;
         peakThreeQ = 0.782464f;
+        cutFreq = 20.f;
     }
     
     else if (instrument == 3)
@@ -241,6 +242,7 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         peakTwoQ = 1.2f;
         peakThreeFreq = 7746.f;
         peakThreeQ = 0.704179f;
+        cutFreq = 75.f;
     }
 
     else if (instrument == 4)
@@ -251,6 +253,7 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         peakTwoQ = 0.866f;
         peakThreeFreq = 10000.f;
         peakThreeQ = 0.6666667f;
+        cutFreq = 275.f;
     }
 
     else if (instrument == 1)
@@ -261,6 +264,7 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         peakTwoQ = 0.866f;
         peakThreeFreq = 10000.f;
         peakThreeQ = 0.6666667f;
+        cutFreq = 20.f;
     }
     //stop the eq if 
     if (instrument == 1)
@@ -301,7 +305,7 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     }
 
     //low cut filter info
-    auto cutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(500.f, getSampleRate(), 2);
+    auto cutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(cutFreq, getSampleRate(), 2);
 
     auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
     *leftLowCut.get<0>().coefficients = *cutCoefficients[0];
