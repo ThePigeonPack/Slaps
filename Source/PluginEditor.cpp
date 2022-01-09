@@ -42,7 +42,8 @@ SlapsAudioProcessorEditor::SlapsAudioProcessorEditor (SlapsAudioProcessor& p)
     instrType.onChange = [this] { instrumentChanged(); };
     instrType.setSelectedId(1);
 
-
+    addAndMakeVisible(pluginBypassButton);
+    pluginBypassButton.onClick = [this] {bypassButtonToggleState(pluginBypassButton.getToggleState()); };
 
 }
 
@@ -79,6 +80,9 @@ void SlapsAudioProcessorEditor::resized()
 
     //Instrument Type Box
     instrType.setBounds(50, 50, 100, 50);
+
+    //bypass button
+    pluginBypassButton.setBounds(1, 1, 25, 25);
 
 
 }
