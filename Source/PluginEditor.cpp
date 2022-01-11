@@ -16,6 +16,7 @@ SlapsAudioProcessorEditor::SlapsAudioProcessorEditor (SlapsAudioProcessor& p)
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setSize (400, 200);
+    startTimerHz(24);
 
     //Show our Gain Slider
     gainSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
@@ -42,8 +43,17 @@ SlapsAudioProcessorEditor::SlapsAudioProcessorEditor (SlapsAudioProcessor& p)
     instrType.onChange = [this] { instrumentChanged(); };
     instrType.setSelectedId(1);
 
+    //show our bypass button
     addAndMakeVisible(pluginBypassButton);
     pluginBypassButton.onClick = [this] {bypassButtonToggleState(pluginBypassButton.getToggleState()); };
+
+    //show our peak level label
+    addAndMakeVisible(peakLabel);
+    peakLabel.setColour(juce::Label::backgroundColourId, juce::Colours::darkblue);
+
+
+ 
+
 
 }
 
@@ -84,6 +94,8 @@ void SlapsAudioProcessorEditor::resized()
     //bypass button
     pluginBypassButton.setBounds(1, 1, 25, 25);
 
+    //peak Label
+    peakLabel.setBounds(150, 150, 125, 25);
 
 }
 
@@ -92,6 +104,7 @@ void SlapsAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
     if (slider == &gainSlider)
     {
         audioProcessor.rawVolume = pow(10, gainSlider.getValue() / 20);
+
     }
     if (slider == &slapKnob)
     {
@@ -100,3 +113,16 @@ void SlapsAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
     }
 }
 
+//this is the function that lets things change in the gui
+void SlapsAudioProcessorEditor::timerCallback()
+{
+    if (++framesElapsed > 100)
+    {
+        framesElapsed = 0;
+
+    }
+
+    //change the peak value on screen
+    peakLabel.setText(std::to_string(audioProcessor.peakLevel), juce::sendNotification);
+
+}

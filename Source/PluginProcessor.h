@@ -69,6 +69,9 @@ public:
 
     bool pluginBypassed{ false };
 
+    float peakLevel;
+
+
  
 
 private:

@@ -210,6 +210,10 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     }
     auto block = juce::dsp::AudioBlock<float>(buffer);
     auto context = juce::dsp::ProcessContextReplacing<float>(block);
+    
+    //set the peak level to be used for the indicator
+    peakLevel = juce::Decibels::gainToDecibels(buffer.getRMSLevel(0, 0, buffer.getNumSamples()));
+
 
     //Now compress the signal
 

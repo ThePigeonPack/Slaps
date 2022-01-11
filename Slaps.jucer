@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="FzUOY0" name="Slaps" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="17">
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" cppLanguageStandard="17"
+              companyName="The Pigeon Pack" companyCopyright="2022" companyWebsite="https://www.thepigeonpack.com">
   <MAINGROUP id="MDyMCB" name="Slaps">
     <GROUP id="{653CE89B-FEDC-7AC0-BE04-62BA20D82AAA}" name="Source">
+      <GROUP id="{015134BE-45E9-1D8B-24A1-7B4A41B66D4C}" name="Component">
+        <FILE id="LkKhwH" name="Meter.h" compile="0" resource="0" file="Source/Meter.h"/>
+      </GROUP>
       <FILE id="BoFv94" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="K4OKlg" name="PluginProcessor.h" compile="0" resource="0"

@@ -17,7 +17,7 @@
 /**
 */
 class SlapsAudioProcessorEditor  : public juce::AudioProcessorEditor,
-                                   public juce::Slider::Listener
+    public juce::Slider::Listener, public juce::Timer
 {
 public:
     SlapsAudioProcessorEditor (SlapsAudioProcessor&);
@@ -27,6 +27,8 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
     void sliderValueChanged(juce::Slider* slider) override;
+    void timerCallback() override;
+    
 
 
 private:
@@ -34,10 +36,14 @@ private:
     // access the processor object that created it.
     SlapsAudioProcessor& audioProcessor;
 
+    //where we create our sliders and such
     juce::Slider gainSlider;
     juce::Slider slapKnob;
     juce::ComboBox instrType;
     juce::ToggleButton pluginBypassButton;
+    juce::Label peakLabel;
+
+    int framesElapsed = 0;
 
     //quick function to set the instrument variable to equal the instrument combobox value
     void instrumentChanged()
