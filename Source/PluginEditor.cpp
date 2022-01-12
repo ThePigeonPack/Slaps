@@ -130,13 +130,31 @@ void SlapsAudioProcessorEditor::timerCallback()
     }
     else if (audioProcessor.peakLevel > -6 )
     {
-        //peakLabel.setText(std::to_string(audioProcessor.peakLevel), juce::sendNotification);
-        peakLabel.setColour(juce::Label::backgroundColourId, juce::Colours::green);
+        if (peakLabel.findColour(juce::Label::backgroundColourId) == juce::Colours::red)
+        {
+            peakLabel.setColour(juce::Label::backgroundColourId, juce::Colours::darkred);
+        }
+        else
+        {
+            //peakLabel.setText(std::to_string(audioProcessor.peakLevel), juce::sendNotification);
+            peakLabel.setColour(juce::Label::backgroundColourId, juce::Colours::green);
+        }
     }
     else
     {
-        peakLabel.setText("", juce::sendNotification);
-        peakLabel.setColour(juce::Label::backgroundColourId, juce::Colours::black);
+        if (peakLabel.findColour(juce::Label::backgroundColourId) == juce::Colours::green)
+        {
+            peakLabel.setColour(juce::Label::backgroundColourId, juce::Colours::darkgreen);
+        }
+        else if (peakLabel.findColour(juce::Label::backgroundColourId) == juce::Colours::red)
+        {
+            peakLabel.setColour(juce::Label::backgroundColourId, juce::Colours::darkred);
+        }
+        else 
+        {
+            peakLabel.setText("", juce::sendNotification);
+            peakLabel.setColour(juce::Label::backgroundColourId, juce::Colours::black);
+        }
     }
 
 }
