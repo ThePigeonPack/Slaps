@@ -16,12 +16,12 @@ SlapsAudioProcessorEditor::SlapsAudioProcessorEditor (SlapsAudioProcessor& p)
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setSize (400, 200);
-    startTimerHz(24);
+    startTimerHz(48);
 
     //Show our Gain Slider
     gainSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
     gainSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 100, 25);
-    gainSlider.setRange(-18.0, 18.0);
+    gainSlider.setRange(-36.0, 36.0);
     gainSlider.setValue(-1.0);
     gainSlider.addListener(this);
     addAndMakeVisible(gainSlider);
@@ -29,7 +29,7 @@ SlapsAudioProcessorEditor::SlapsAudioProcessorEditor (SlapsAudioProcessor& p)
     //Show our One Knob
     slapKnob.setSliderStyle(juce::Slider::SliderStyle::Rotary);
     slapKnob.setTextBoxStyle(juce::Slider::NoTextBox, true, 100, 25);
-    slapKnob.setRange(-24.0, 24.0);
+    slapKnob.setRange(-6.0, 36.0);
     slapKnob.setValue(0.0);
     slapKnob.addListener(this);
     addAndMakeVisible(slapKnob);
@@ -49,7 +49,7 @@ SlapsAudioProcessorEditor::SlapsAudioProcessorEditor (SlapsAudioProcessor& p)
 
     //show our peak level label
     addAndMakeVisible(peakLabel);
-    peakLabel.setColour(juce::Label::backgroundColourId, juce::Colours::darkblue);
+    peakLabel.setColour(juce::Label::backgroundColourId, juce::Colours::black);
 
 
  
@@ -89,13 +89,13 @@ void SlapsAudioProcessorEditor::resized()
     slapKnob.setBounds(200, 100, 100, 100);
 
     //Instrument Type Box
-    instrType.setBounds(50, 50, 100, 50);
+    instrType.setBounds(290, 10, 100, 50);
 
     //bypass button
     pluginBypassButton.setBounds(1, 1, 25, 25);
 
     //peak Label
-    peakLabel.setBounds(150, 150, 125, 25);
+    peakLabel.setBounds(112, 75, 25, 25);
 
 }
 
@@ -109,7 +109,7 @@ void SlapsAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
     if (slider == &slapKnob)
     {
         audioProcessor.slapLevel = slapKnob.getValue();
-        audioProcessor.volumeSlap = pow(10, slapKnob.getValue() / 20);
+        audioProcessor.volumeSlap = pow(10, slapKnob.getValue() / 60);
     }
 }
 
@@ -122,7 +122,21 @@ void SlapsAudioProcessorEditor::timerCallback()
 
     }
 
-    //change the peak value on screen
-    peakLabel.setText(std::to_string(audioProcessor.peakLevel), juce::sendNotification);
+    //change the peak value color on screen
+    if (audioProcessor.peakLevel >= -0.5)
+    {
+
+        peakLabel.setColour(juce::Label::backgroundColourId, juce::Colours::red);
+    }
+    else if (audioProcessor.peakLevel > -6 )
+    {
+        //peakLabel.setText(std::to_string(audioProcessor.peakLevel), juce::sendNotification);
+        peakLabel.setColour(juce::Label::backgroundColourId, juce::Colours::green);
+    }
+    else
+    {
+        peakLabel.setText("", juce::sendNotification);
+        peakLabel.setColour(juce::Label::backgroundColourId, juce::Colours::black);
+    }
 
 }

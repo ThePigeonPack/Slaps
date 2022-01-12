@@ -222,7 +222,7 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         compressor.setRatio(10.0);
         compressor.setAttack(40);
         compressor.setRelease(200);
-        compressor.setThreshold(slapLevel * -2.5);
+        compressor.setThreshold(slapLevel * -0.5);
         compressor.process(context);
     }
     else {}
@@ -297,21 +297,21 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     //use the eq otherwise
     else {
         //these three sets set each of the peak filters to do what they gotta do
-        auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), peakOneFreq, peakOneQ, juce::Decibels::decibelsToGain(slapLevel * 0.75));
+        auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), peakOneFreq, peakOneQ, juce::Decibels::decibelsToGain(slapLevel * 0.3));
 
         leftChain.setBypassed <ChainPositions::PeakOne>(pluginBypassed);
         rightChain.setBypassed <ChainPositions::PeakOne>(pluginBypassed);
         leftChain.get<ChainPositions::PeakOne>().coefficients = *peakCoefficients;
         rightChain.get<ChainPositions::PeakOne>().coefficients = *peakCoefficients;
 
-        auto peakTwoCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), peakTwoFreq, peakTwoQ, juce::Decibels::decibelsToGain(slapLevel * -0.4));
+        auto peakTwoCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), peakTwoFreq, peakTwoQ, juce::Decibels::decibelsToGain(slapLevel * -0.2));
 
         leftChain.setBypassed <ChainPositions::PeakTwo>(pluginBypassed);
         rightChain.setBypassed <ChainPositions::PeakTwo>(pluginBypassed);
         leftChain.get<ChainPositions::PeakTwo>().coefficients = *peakTwoCoefficients;
         rightChain.get<ChainPositions::PeakTwo>().coefficients = *peakTwoCoefficients;
 
-        auto peakThreeCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), peakThreeFreq, peakThreeQ, juce::Decibels::decibelsToGain(slapLevel * 0.5));
+        auto peakThreeCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), peakThreeFreq, peakThreeQ, juce::Decibels::decibelsToGain(slapLevel * 0.25));
 
         leftChain.setBypassed <ChainPositions::PeakThree>(pluginBypassed);
         rightChain.setBypassed <ChainPositions::PeakThree>(pluginBypassed);
