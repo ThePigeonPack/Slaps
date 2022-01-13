@@ -32,9 +32,7 @@ public:
 
 
 private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
-    SlapsAudioProcessor& audioProcessor;
+ 
 
     //where we create our sliders and such
     juce::Slider gainSlider;
@@ -42,6 +40,11 @@ private:
     juce::ComboBox instrType;
     juce::ToggleButton pluginBypassButton;
     juce::Label peakLabel;
+
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainSliderAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> slapKnobAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> bypassAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> instrumentAttachment;
 
     int framesElapsed = 0;
 
@@ -62,6 +65,10 @@ private:
     {
         audioProcessor.pluginBypassed = bypassValue;
     }
+
+    // This reference is provided as a quick way for your editor to
+    // access the processor object that created it.
+    SlapsAudioProcessor& audioProcessor;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SlapsAudioProcessorEditor)
 };

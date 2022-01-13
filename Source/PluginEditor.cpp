@@ -21,16 +21,14 @@ SlapsAudioProcessorEditor::SlapsAudioProcessorEditor (SlapsAudioProcessor& p)
     //Show our Gain Slider
     gainSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
     gainSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 100, 25);
-    gainSlider.setRange(-36.0, 36.0);
-    gainSlider.setValue(-1.0);
+    gainSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "GAIN", gainSlider);
     gainSlider.addListener(this);
     addAndMakeVisible(gainSlider);
 
     //Show our One Knob
     slapKnob.setSliderStyle(juce::Slider::SliderStyle::Rotary);
     slapKnob.setTextBoxStyle(juce::Slider::NoTextBox, true, 100, 25);
-    slapKnob.setRange(-6.0, 36.0);
-    slapKnob.setValue(0.0);
+    slapKnobAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "SLAP", slapKnob);
     slapKnob.addListener(this);
     addAndMakeVisible(slapKnob);
 
@@ -41,10 +39,12 @@ SlapsAudioProcessorEditor::SlapsAudioProcessorEditor (SlapsAudioProcessor& p)
     instrType.addItem("Snare", 3);
     instrType.addItem("Hi-Hat", 4);
     instrType.onChange = [this] { instrumentChanged(); };
-    instrType.setSelectedId(1);
+    instrumentAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "INSTRUMENT", instrType);
+ 
 
     //show our bypass button
     addAndMakeVisible(pluginBypassButton);
+    bypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "BYPASS", pluginBypassButton);
     pluginBypassButton.onClick = [this] {bypassButtonToggleState(pluginBypassButton.getToggleState()); };
 
     //show our peak level label

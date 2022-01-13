@@ -19,9 +19,10 @@ SlapsAudioProcessor::SlapsAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ), apvts (*this, nullptr, "Parameters", createParameters())
 #endif
 {
+   
 }
 
 SlapsAudioProcessor::~SlapsAudioProcessor()
@@ -187,7 +188,10 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-
+    auto chainSettings = getChainSettings(apvts);
+    rawVolume = chainSettings.gainKnob;
+    slapLevel = chainSettings.slapLevel;
+    volumeSlap = chainSettings.volumeSlap;
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
@@ -208,6 +212,9 @@ void SlapsAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
 
         }
     }
+
+
+    
     auto block = juce::dsp::AudioBlock<float>(buffer);
     auto context = juce::dsp::ProcessContextReplacing<float>(block);
     
@@ -386,6 +393,7 @@ void SlapsAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+
 }
 
 
@@ -406,4 +414,39 @@ void SlapsAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new SlapsAudioProcessor();
+}
+
+ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts)
+{
+    ChainSettings settings;
+
+    settings.gainKnob = pow(10, apvts.getRawParameterValue("GAIN")->load() / 20);
+    settings.slapLevel = apvts.getRawParameterValue("SLAP")->load();
+    settings.bypass = apvts.getRawParameterValue("BYPASS")->load();
+    settings.volumeSlap = pow(10, settings.slapLevel / 60);
+    settings.instrument = apvts.getRawParameterValue("INSTRUMENT")->load();
+    
+
+    return settings;
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout SlapsAudioProcessor::createParameters()
+{
+    std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
+
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("GAIN", "Gain", -36.0f, 36.0f, 0.f));
+    params.push_back(std::make_unique<juce::AudioParameterFloat>("SLAP", "Slap", -6.0f, 36.0f, 0.f));
+    params.push_back(std::make_unique<juce::AudioParameterBool>("BYPASS", "Bypass", false));
+
+    juce::StringArray stringArray;
+    juce::String str;
+    stringArray.add("None");
+    stringArray.add("Kick");
+    stringArray.add("Snare");
+    stringArray.add("Hi Hat");
+
+    params.push_back(std::make_unique<juce::AudioParameterChoice>("INSTRUMENT", "Instrument", stringArray, 0));
+
+
+    return { params.begin(), params.end() };
 }

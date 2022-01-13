@@ -10,6 +10,13 @@
 
 #include <JuceHeader.h>
 
+struct ChainSettings
+{
+    float gainKnob{ 0 }, slapLevel{ 0 }, volumeSlap{ 0 }; bool bypass{ false }; int instrument{ 0 };
+
+};
+
+ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts);
 
 //==============================================================================
 /**
@@ -71,10 +78,14 @@ public:
 
     float peakLevel;
 
+    //what you gotta do for the slider parameters to save
+    juce::AudioProcessorValueTreeState apvts;
 
  
 
 private:
+
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
 
     juce::dsp::Compressor<float> compressor;
 
