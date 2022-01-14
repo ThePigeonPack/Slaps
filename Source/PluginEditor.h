@@ -40,6 +40,7 @@ private:
     juce::ComboBox instrType;
     juce::ToggleButton pluginBypassButton;
     juce::Label peakLabel;
+    juce::ImageComponent mImageComponent;
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainSliderAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> slapKnobAttachment;

@@ -5,9 +5,6 @@
               companyName="The Pigeon Pack" companyCopyright="2022" companyWebsite="https://www.thepigeonpack.com">
   <MAINGROUP id="MDyMCB" name="Slaps">
     <GROUP id="{653CE89B-FEDC-7AC0-BE04-62BA20D82AAA}" name="Source">
-      <GROUP id="{015134BE-45E9-1D8B-24A1-7B4A41B66D4C}" name="Component">
-        <FILE id="LkKhwH" name="Meter.h" compile="0" resource="0" file="Source/Meter.h"/>
-      </GROUP>
       <FILE id="BoFv94" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="K4OKlg" name="PluginProcessor.h" compile="0" resource="0"
@@ -15,6 +12,9 @@
       <FILE id="ga4Xdx" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="A4HAFK" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    </GROUP>
+    <GROUP id="{B439F772-CD95-137E-5D35-9DB4E2463037}" name="Resources">
+      <FILE id="KAcWDR" name="Logo.png" compile="0" resource="1" file="Resources/Logo.png"/>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>

@@ -15,7 +15,7 @@ SlapsAudioProcessorEditor::SlapsAudioProcessorEditor (SlapsAudioProcessor& p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 200);
+    setSize (500, 300);
     startTimerHz(48);
 
     //Show our Gain Slider
@@ -50,8 +50,18 @@ SlapsAudioProcessorEditor::SlapsAudioProcessorEditor (SlapsAudioProcessor& p)
     //show our peak level label
     addAndMakeVisible(peakLabel);
     peakLabel.setColour(juce::Label::backgroundColourId, juce::Colours::black);
+    peakLabel.attachToComponent(&gainSlider, false);
 
-
+    //image time baby
+    auto logoImage = juce::ImageCache::getFromMemory(BinaryData::Logo_png, BinaryData::Logo_pngSize);
+    if (!logoImage.isNull()) 
+    {
+        mImageComponent.setImage(logoImage, juce::RectanglePlacement::stretchToFit);
+    }
+    else {
+        jassert (! logoImage.isNull());
+    }
+    addAndMakeVisible(mImageComponent);
  
 
 
@@ -65,12 +75,12 @@ SlapsAudioProcessorEditor::~SlapsAudioProcessorEditor()
 void SlapsAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll(juce::Colours::burlywood);
+    g.fillAll(juce::Colours::slategrey);
 
     //Title lol
     g.setFont(juce::Font(48.0f));
-    g.setColour(juce::Colours::red);
-    g.drawText("Slaps", getLocalBounds(), juce::Justification::centredTop, true);
+    g.setColour(juce::Colours::black);
+    g.drawText("SLAPS", getLocalBounds(), juce::Justification::centredTop, true);
 
 
 
@@ -83,19 +93,22 @@ void SlapsAudioProcessorEditor::resized()
     // subcomponents in your editor..
 
     //gain Slider
-    gainSlider.setBounds(100,100, 50, 100);
+    gainSlider.setBounds(100,100, 50, 150);
 
     //slap Knob
-    slapKnob.setBounds(200, 100, 100, 100);
+    slapKnob.setBounds(250, 100, 150, 150);
 
     //Instrument Type Box
-    instrType.setBounds(290, 10, 100, 50);
+    instrType.setBounds(390, 10, 100, 50);
 
     //bypass button
-    pluginBypassButton.setBounds(1, 1, 25, 25);
+    pluginBypassButton.setBounds(10, 10, 50, 50);
 
     //peak Label
     peakLabel.setBounds(112, 75, 25, 25);
+
+    //image
+    mImageComponent.setBoundsRelative(0.23f, .23f, 0.03f, 0.055f);
 
 }
 
